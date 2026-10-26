@@ -3,3 +3,5 @@
 .env.*
 secrets.yaml
 rendered.yaml
+__pycache__/
+*.pyc

@@ -42,7 +42,7 @@ The example uses whole GPUs and assumes the GPU node has no extra taint that blo
 | `litellm.yaml` | The API proxy, health checks, and internal Service. |
 | `kustomization.yaml` | Loads the YAML and turns `config.yaml` into a ConfigMap. |
 | `request.json` | A short streaming chat request. |
-| `kserve/` | A separate next step for an already configured KServe platform. |
+| `kserve/` | A KServe learning path, from platform installation to streaming through Envoy and llm-d. |
 
 ## 1. Create the namespace and key
 
@@ -121,7 +121,9 @@ After editing `config.yaml`, run `kubectl apply -k .` again. Kustomize changes t
 
 ## Where the rest of the blog fits
 
-The [KServe example](kserve/README.md) adds managed model serving and inference routing on a prepared platform. The complete production architecture also needs choices about AI gateway integration, durable PostgreSQL storage, shared Redis state, TLS, access controls, monitoring, and scaling. Those are deliberately separate steps here. This starter does not install controllers, create cloud GPU nodes, or configure autoscaling.
+The [KServe walkthrough](kserve/README.md) covers platform installation, a model managed by KServe, Envoy forwarding, llm-d endpoint selection, and an optional LiteLLM proxy. It uses a separate namespace and a gateway with an internal ClusterIP Service. Start with the plain example above, then move to that walkthrough to understand the surrounding serving platform.
+
+Production serving also needs decisions about durable PostgreSQL storage, shared Redis state, public TLS, tenant access controls, monitoring, and scaling. Those remain separate exercises. Neither example creates cloud GPU nodes or configures autoscaling.
 
 vLLM already exposes `/metrics` on port 8000 for a future Prometheus setup. Start by getting one request working before adding that stack.
 

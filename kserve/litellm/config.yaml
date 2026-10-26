@@ -1,0 +1,8 @@
+model_list:
+  - model_name: coder
+    litellm_params:
+      model: hosted_vllm/coder
+      api_base: os.environ/KSERVE_API_BASE
+      api_key: EMPTY
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY

@@ -1,27 +1,43 @@
-# An alternative to the plain vLLM Deployment, for an existing KServe platform.
+# KServe supplies the startup command, model download, and routing resources.
 apiVersion: serving.kserve.io/v1alpha1
 kind: LLMInferenceService
 metadata:
   name: coder
-  namespace: llm-demo
+  namespace: llm-kserve-demo
 spec:
   model:
-    uri: hf://Qwen/Qwen2.5-0.5B-Instruct
+    uri: hf://Qwen/Qwen2.5-0.5B-Instruct:7ae5576
     name: coder
   replicas: 1
   template:
     containers:
       - name: main
-        # The installed KServe runtime supplies the image and startup settings.
+        # Match KServe v0.20.0's default GPU runtime.
+        image: ghcr.io/llm-d/llm-d-cuda:v0.8.0
+        env:
+          - name: VLLM_ADDITIONAL_ARGS
+            value: >-
+              --dtype half
+              --max-model-len 4096
+              --max-num-seqs 8
+              --gpu-memory-utilization 0.8
         resources:
           requests:
             cpu: "2"
             memory: 8Gi
+            nvidia.com/gpu: "1"
           limits:
             cpu: "4"
             memory: 16Gi
             nvidia.com/gpu: "1"
+        startupProbe:
+          failureThreshold: 180
+          periodSeconds: 10
+          timeoutSeconds: 5
   router:
-    gateway: {}
+    gateway:
+      refs:
+        - name: kserve-ingress-gateway
+          namespace: kserve
     route: {}
     scheduler: {}
