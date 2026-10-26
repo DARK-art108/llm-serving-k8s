@@ -123,6 +123,8 @@ After editing `config.yaml`, run `kubectl apply -k .` again. Kustomize changes t
 
 The [KServe walkthrough](kserve/README.md) covers platform installation, a model managed by KServe, Envoy forwarding, llm-d endpoint selection, and an optional LiteLLM proxy. It uses a separate namespace and a gateway with an internal ClusterIP Service. Start with the plain example above, then move to that walkthrough to understand the surrounding serving platform.
 
+Its [request flow diagram](kserve/README.md#follow-one-request) shows where Envoy asks the Endpoint Picker for a model pod and how generated text reaches the client.
+
 Production serving also needs decisions about durable PostgreSQL storage, shared Redis state, public TLS, tenant access controls, monitoring, and scaling. Those remain separate exercises. Neither example creates cloud GPU nodes or configures autoscaling.
 
 vLLM already exposes `/metrics` on port 8000 for a future Prometheus setup. Start by getting one request working before adding that stack.

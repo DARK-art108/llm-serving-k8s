@@ -6,6 +6,36 @@ We still use the small Qwen model and call it `coder`. A local port-forward reac
 
 Start with one replica. It is enough to learn the wiring. A second replica needs another available GPU allocation.
 
+## Follow one request
+
+This is the direct gateway request used in the walkthrough. Read the numbered arrows from top to bottom. Solid arrows carry the request or ask for a routing decision; dashed arrows return that decision or stream the answer.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Client as Your app / curl
+    participant Envoy as Envoy Proxy
+    participant EPP as llm-d Endpoint Picker
+    participant Model as vLLM on GPU
+
+    Client->>Envoy: Send chat request for coder
+    Envoy->>Envoy: Match route and identify InferencePool
+    Envoy->>EPP: Ask for a model endpoint
+    EPP-->>Envoy: Return selected pod address
+    Envoy->>Model: Forward chat request
+
+    Note right of Model: Process prompt and<br/>generate the answer
+
+    loop While the answer is generated
+        Model-->>Envoy: Generated text chunks
+        Envoy-->>Client: Stream text chunks
+    end
+```
+
+Envoy carries the request and response. The Endpoint Picker chooses the model pod; generated text returns through Envoy. An `InferencePool` describes eligible endpoints and is not another network hop.
+
+KServe's controller creates and maintains the workload and routing resources outside this exchange. With one replica, the picker has only one eligible model destination. Optional LiteLLM sits between the client and Envoy, checking the API key before forwarding the request.
+
 ## Before you start
 
 Use a fresh development cluster for the platform installation. This walkthrough targets KServe **v0.20.0** and its release's component versions. Envoy Gateway v1.8 supports Kubernetes v1.32 through v1.35; Kubernetes v1.34 is a reasonable target for this lab. Check the [compatibility matrix](https://gateway.envoyproxy.io/news/releases/matrix/) when choosing a version.
