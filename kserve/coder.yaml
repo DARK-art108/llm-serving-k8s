@@ -1,0 +1,27 @@
+# An alternative to the plain vLLM Deployment, for an existing KServe platform.
+apiVersion: serving.kserve.io/v1alpha1
+kind: LLMInferenceService
+metadata:
+  name: coder
+  namespace: llm-demo
+spec:
+  model:
+    uri: hf://Qwen/Qwen2.5-0.5B-Instruct
+    name: coder
+  replicas: 1
+  template:
+    containers:
+      - name: main
+        # The installed KServe runtime supplies the image and startup settings.
+        resources:
+          requests:
+            cpu: "2"
+            memory: 8Gi
+          limits:
+            cpu: "4"
+            memory: 16Gi
+            nvidia.com/gpu: "1"
+  router:
+    gateway: {}
+    route: {}
+    scheduler: {}

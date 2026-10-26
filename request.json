@@ -1,0 +1,12 @@
+{
+  "model": "coder",
+  "messages": [
+    {
+      "role": "user",
+      "content": "Explain what a Kubernetes pod is in two short sentences."
+    }
+  ],
+  "max_tokens": 100,
+  "temperature": 0.2,
+  "stream": true
+}

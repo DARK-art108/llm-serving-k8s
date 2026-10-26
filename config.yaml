@@ -1,0 +1,10 @@
+model_list:
+  - model_name: coder
+    litellm_params:
+      model: hosted_vllm/coder
+      api_base: http://vllm:8000/v1
+      # The upstream vLLM server has no API key in this local demo.
+      api_key: EMPTY
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
